@@ -16,9 +16,9 @@ namespace OperationLogger.Wcf
             IsParameterLoggingEnabled = (operation, parameterName) => true;
         }
 
-		public static Action<OperationDetails> LogAction { get; set; }
-		public static Action<Exception, string> OnError { get; set; }
-		public Func<DispatchOperation, bool> IsEnabledForOperation { get; set; }
+        public static Action<OperationDetails> LogAction { get; set; }
+        public static Action<Exception, string> OnError { get; set; }
+        public Func<DispatchOperation, bool> IsEnabledForOperation { get; set; }
         public Func<DispatchOperation, string, bool> IsParameterLoggingEnabled { get; set; }
 
         void IServiceBehavior.AddBindingParameters(ServiceDescription serviceDescription,
@@ -28,17 +28,22 @@ namespace OperationLogger.Wcf
         {
         }
 
-        void IServiceBehavior.ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
+        void IServiceBehavior.ApplyDispatchBehavior(ServiceDescription serviceDescription,
+                                                    ServiceHostBase serviceHostBase)
         {
             // add parameter inspector for all enabled operations in the service
             foreach (var channelDispatcher in serviceHostBase.ChannelDispatchers.OfType<ChannelDispatcher>())
             {
                 foreach (var endpointDispatcher in channelDispatcher.Endpoints)
                 {
-                    var endpoint = serviceHostBase.Description.Endpoints.Find(endpointDispatcher.EndpointAddress.Uri);
-                    foreach (var dispatchOperation in endpointDispatcher.DispatchRuntime.Operations.Where(IsEnabledForOperation))
+                    var endpoint = serviceHostBase.Description.Endpoints
+                                                  .Find(endpointDispatcher.EndpointAddress.Uri);
+                    foreach (var dispatchOperation in endpointDispatcher.DispatchRuntime.Operations
+                                                                        .Where(IsEnabledForOperation))
                     {
-                        var operationDescription = endpoint != null ? GetOperationDescription(endpoint, dispatchOperation) : null;
+                        var operationDescription = endpoint != null
+                                                       ? GetOperationDescription(endpoint, dispatchOperation)
+                                                       : null;
                         AddParameterInspector(dispatchOperation, operationDescription);
                     }
                 }
@@ -49,20 +54,22 @@ namespace OperationLogger.Wcf
         {
         }
 
-        private static OperationDescription GetOperationDescription(ServiceEndpoint endpoint, DispatchOperation dispatchOperation)
+        private static OperationDescription GetOperationDescription(ServiceEndpoint endpoint,
+                                                                    DispatchOperation dispatchOperation)
         {
             return endpoint.Contract.Operations.Find(dispatchOperation.Name);
         }
 
-        private void AddParameterInspector(DispatchOperation dispatchOperation, OperationDescription operationDescription)
+        private void AddParameterInspector(DispatchOperation dispatchOperation,
+                                           OperationDescription operationDescription)
         {
             var parameterInspector = new ParameterInspector(operationDescription)
-            {
-                LogAction = LogAction,
-				OnError = OnError,
-                IsParameterLoggingEnabled =
-                    parameterName => IsParameterLoggingEnabled(dispatchOperation, parameterName)
-            };
+                                     {
+                                         LogAction = LogAction,
+                                         OnError = OnError,
+                                         IsParameterLoggingEnabled =
+                                             parameterName => IsParameterLoggingEnabled(dispatchOperation, parameterName)
+                                     };
             dispatchOperation.ParameterInspectors.Add(parameterInspector);
         }
     }
