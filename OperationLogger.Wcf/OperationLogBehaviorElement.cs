@@ -138,7 +138,7 @@ namespace OperationLogger.Wcf
             set { this[ActionPropertyName] = value; }
         }
 
-        [ConfigurationProperty(ParameterPatternPropertyName, DefaultValue = ".*", IsRequired = true, IsKey = false)]
+        [ConfigurationProperty(ParameterPatternPropertyName, DefaultValue = ".*", IsRequired = false, IsKey = false)]
         public string ParameterPattern
         {
             get { return (string) this[ParameterPatternPropertyName]; }
