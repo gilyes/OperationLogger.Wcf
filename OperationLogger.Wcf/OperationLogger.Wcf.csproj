@@ -56,7 +56,7 @@
   <Import Project="$(SolutionDir).nuget\nuget.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir $(ProjectDir)\nuget
-$(SolutionDir).nuget\nuget pack $(ProjectDir)OperationLogger.Wcf.csproj -OutputDirectory $(ProjectDir)nuget</PostBuildEvent>
+$(SolutionDir).nuget\nuget pack $(ProjectDir)OperationLogger.Wcf.csproj -OutputDirectory $(ProjectDir)nuget -Prop Configuration=$(ConfigurationName)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
