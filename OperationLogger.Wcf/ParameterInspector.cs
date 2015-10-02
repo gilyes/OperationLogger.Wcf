@@ -7,79 +7,82 @@ using System.ServiceModel.Dispatcher;
 
 namespace OperationLogger.Wcf
 {
-	public class ParameterInspector : IParameterInspector
-	{
-		private readonly OperationDescription _operationDescription;
+   public class ParameterInspector : IParameterInspector
+    {
+        private readonly OperationDescription _operationDescription;
 
-		public ParameterInspector(OperationDescription operationDescription)
-		{
-			_operationDescription = operationDescription;
-			IsParameterLoggingEnabled = parameterName => true;
-		}
+        public ParameterInspector(OperationDescription operationDescription)
+        {
+            // We need an OperationDescription to get access to parameter names.
+            _operationDescription = operationDescription;
 
-		public Action<OperationDetails> LogAction { get; set; }
-		public Func<string, bool> IsParameterLoggingEnabled { get; set; }
+            // By default log all parameters.
+            IsParameterLoggingEnabled = parameterName => true;
+        }
 
-		public object BeforeCall(string operationName, object[] inputs)
-		{
-			if (LogAction == null)
-			{
-				return null;
-			}
+        public Action<OperationDetails> LogAction { get; set; }
+        public Func<string, bool> IsParameterLoggingEnabled { get; set; }
 
-			var operationContext = OperationContext.Current;
-			var securityContext = ServiceSecurityContext.Current;
+        public object BeforeCall(string operationName, object[] inputs)
+        {
+            if (LogAction == null)
+            {
+                return null;
+            }
 
-			var operationData = new OperationDetails
-			                    {
-				                    OperationName = operationName,
-				                    IsAnonymous = true,
-				                    Action = operationContext.IncomingMessageHeaders.Action
-			                    };
+            var operationContext = OperationContext.Current;
+            var securityContext = ServiceSecurityContext.Current;
 
-			if (securityContext != null)
-			{
-				operationData.UserName = securityContext.PrimaryIdentity.Name;
-				operationData.IsAnonymous = securityContext.IsAnonymous;
-			}
+            var operationData = new OperationDetails
+            {
+                OperationName = operationName,
+                IsAnonymous = true,
+                Action = operationContext.IncomingMessageHeaders.Action
+            };
 
-			operationData.ServiceUri = operationContext.Channel.LocalAddress.Uri;
+            if (securityContext != null)
+            {
+                operationData.UserName = securityContext.PrimaryIdentity.Name;
+                operationData.IsAnonymous = securityContext.IsAnonymous;
+            }
 
-			var remoteEndpoint =
-				OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name] as RemoteEndpointMessageProperty;
-			if (remoteEndpoint != null)
-			{
-				operationData.ClientAddress = remoteEndpoint.Address;
-			}
+            operationData.ServiceUri = operationContext.Channel.LocalAddress.Uri;
 
-			try
-			{
-				operationData.Identity = ServiceSecurityContext.Current.PrimaryIdentity;
-			}
-			catch
-			{
-				// cannot get identity, not much we can do, ignore
-			}
+            var remoteEndpoint =
+                OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name] as RemoteEndpointMessageProperty;
+            if (remoteEndpoint != null)
+            {
+                operationData.ClientAddress = remoteEndpoint.Address;
+            }
 
-			if (inputs != null)
-			{
-				var parameterInfos = _operationDescription.SyncMethod.GetParameters();
-				int i = 0;
-				foreach (var parameterInfo in parameterInfos.Where(x => IsParameterLoggingEnabled(x.Name)))
-				{
-					operationData.Parameters.Add(parameterInfo.Name, i < inputs.Length ? inputs[i] : null);
-					i++;
-				}
-			}
+            try
+            {
+                operationData.Identity = ServiceSecurityContext.Current.PrimaryIdentity;
+            }
+            catch
+            {
+                // cannot get identity, not much we can do, ignore
+            }
 
-			LogAction(operationData);
+            if (inputs != null)
+            {
+                var parameterInfos = _operationDescription.SyncMethod.GetParameters();
+                int i = 0;
+                foreach (var parameterInfo in parameterInfos.Where(x => IsParameterLoggingEnabled(x.Name)))
+                {
+                    operationData.Parameters.Add(parameterInfo.Name, i < inputs.Length ? inputs[i] : null);
+                    i++;
+                }
+            }
 
-			return null;
-		}
+            LogAction(operationData);
 
-		public void AfterCall(string operationName, object[] outputs, object returnValue, object correlationState)
-		{
-			// do nothing
-		}
-	}
+            return null;
+        }
+
+        public void AfterCall(string operationName, object[] outputs, object returnValue, object correlationState)
+        {
+            // do nothing
+        }
+    }
 }
