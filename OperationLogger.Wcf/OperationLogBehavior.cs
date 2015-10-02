@@ -16,8 +16,9 @@ namespace OperationLogger.Wcf
             IsParameterLoggingEnabled = (operation, parameterName) => true;
         }
 
-        public static Action<OperationDetails> LogAction { get; set; }
-        public Func<DispatchOperation, bool> IsEnabledForOperation { get; set; }
+		public static Action<OperationDetails> LogAction { get; set; }
+		public static Action<Exception, string> OnError { get; set; }
+		public Func<DispatchOperation, bool> IsEnabledForOperation { get; set; }
         public Func<DispatchOperation, string, bool> IsParameterLoggingEnabled { get; set; }
 
         void IServiceBehavior.AddBindingParameters(ServiceDescription serviceDescription,
@@ -58,6 +59,7 @@ namespace OperationLogger.Wcf
             var parameterInspector = new ParameterInspector(operationDescription)
             {
                 LogAction = LogAction,
+				OnError = OnError,
                 IsParameterLoggingEnabled =
                     parameterName => IsParameterLoggingEnabled(dispatchOperation, parameterName)
             };

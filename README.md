@@ -70,3 +70,11 @@ Or it could be disabled for specific parameters:
 </operationLog>
 ```
 
+### Error handling
+Exceptions during logging are swallowd, but the service can get notified of exceptions by setting up the `OperationLogBehavior.OnError` static function: 
+
+```cs
+OperationLogBehavior.OnError = (e, message) => { /*handle error*/ };
+```
+
+
