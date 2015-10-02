@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OperationDetails.cs" />
-    <Compile Include="OperationLogAttribute.cs" />
     <Compile Include="OperationLogBehavior.cs" />
     <Compile Include="OperationLogBehaviorElement.cs" />
     <Compile Include="ParameterInspector.cs" />
