@@ -19,7 +19,8 @@ First enable the use of the service behavior using the behavior extension elemen
 <system.serviceModel>
     <extensions>
         <behaviorExtensions>
-            <add name="operationLog" type="OperationLogger.Wcf.OperationLogBehaviorElement, OperationLogger.Wcf" />
+            <add name="operationLog" 
+                 type="OperationLogger.Wcf.OperationLogBehaviorElement, OperationLogger.Wcf" />
         </behaviorExtensions>
         ...
 ```
@@ -55,7 +56,8 @@ Parameter logging can be controlled similarly, using the `parameterPattern` attr
 ```
 <operationLog>
     <patterns>
-        <add actionPattern=".*IAuthenticationService/Authenticate" parameterPattern="^$" />
+        <add actionPattern=".*IAuthenticationService/Authenticate" 
+             parameterPattern="^$" />
     </patterns>
 </operationLog>
 ```
@@ -65,7 +67,8 @@ Or it could be disabled for specific parameters:
 ```
 <operationLog>
     <patterns>
-        <add actionPattern=".*IAuthenticationService/Authenticate" parameterPattern="^((?!password).)*$" />
+        <add actionPattern=".*IAuthenticationService/Authenticate" 
+             parameterPattern="^((?!password).)*$" />
     </patterns>
 </operationLog>
 ```
