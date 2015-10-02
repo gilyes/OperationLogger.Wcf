@@ -1,2 +1,6 @@
 *.nupkg
 OperationLogger.Wcf/obj/
+*.user
+OperationLogger.Wcf/bin/
+*.suo
+.nuget/NuGet.exe
