@@ -13,7 +13,7 @@ OperationLogBehavior.LogAction = operationDetails => { /*TODO: log to db/file/wh
 ```
 
 ### Configuration
-First enable the use of the service behavior using the behavior extension element:
+First enable the use of the service behavior by defining the behavior extension element:
 
 ```
 <system.serviceModel>
@@ -31,7 +31,6 @@ Then add this behavior to the service's behavior definition:
 <behaviors>
     <serviceBehaviors>
         <behavior name="MyServiceBehavior">
-          
             <operationLog>
                 <patterns>
                     <add actionPattern=".*" />
@@ -76,7 +75,7 @@ Or it could be disabled for specific parameters:
 ### Error handling
 Exceptions during logging are swallowed, but the service can get notified of exceptions by setting up the `OperationLogBehavior.OnError` static function: 
 
-```cs
+```csharp
 OperationLogBehavior.OnError = (e, message) => { /*handle error*/ };
 ```
 
